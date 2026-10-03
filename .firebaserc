@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "simplicity-wins-76c7a"
+  },
+  "targets": {
+    "simplicity-wins-76c7a": {
+      "hosting": {
+        "admin": [
+          "simplicitywins"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
