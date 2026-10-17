@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -38,6 +39,39 @@ class AppImage extends StatelessWidget {
           ),
         ),
       );
+    } else if (kIsWeb) {
+      // Fast Native Image.network for Web & Safari WebKit compatibility
+      return Image.network(
+        imageUrl,
+        fit: fit,
+        color: color,
+        colorBlendMode: colorBlendMode,
+        height: height,
+        width: width,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            height: height,
+            width: width,
+            color: const Color(0xFFF2ECE1),
+            child: const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1A1A1A)),
+              ),
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) => Container(
+          height: height,
+          width: width,
+          color: const Color(0xFFEFE9D8),
+          child: const Center(
+            child: Icon(Icons.image_not_supported, color: Colors.black38),
+          ),
+        ),
+      );
     } else {
       return CachedNetworkImage(
         imageUrl: imageUrl,
@@ -52,8 +86,8 @@ class AppImage extends StatelessWidget {
           color: const Color(0xFFF2ECE1),
           child: const Center(
             child: SizedBox(
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
               child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1A1A1A)),
             ),
           ),

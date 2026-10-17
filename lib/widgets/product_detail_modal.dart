@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/product.dart';
@@ -50,143 +51,190 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
   Widget build(BuildContext context) {
     final mobile = MediaQuery.sizeOf(context).width < 720;
     final product = widget.product;
-    final cartService = Provider.of<CartService>(context, listen: false);
 
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: mobile ? 0.88 : 0.82,
-        minChildSize: 0.50,
-        maxChildSize: 0.96,
-        builder: (ctx, controller) => Container(
-          decoration: const BoxDecoration(
-            color: paper,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-          ),
-          child: Column(
-            children: [
-              // Drag Indicator Bar
-              Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 6),
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.black26,
-                  borderRadius: BorderRadius.circular(2),
+      child: PointerInterceptor(
+        child: DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: mobile ? 0.88 : 0.82,
+          minChildSize: 0.50,
+          maxChildSize: 0.96,
+          builder: (ctx, controller) => Container(
+            decoration: const BoxDecoration(
+              color: paper,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+            ),
+            child: Column(
+              children: [
+                // Drag Indicator Bar
+                Container(
+                  margin: const EdgeInsets.only(top: 10, bottom: 6),
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
 
-              // Scrollable Details Body
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: controller,
-                  padding: EdgeInsets.all(mobile ? 16 : 30),
-                  child: mobile
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                // Scrollable Details Body
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: controller,
+                    padding: EdgeInsets.all(mobile ? 16 : 30),
+                    child: mobile
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _detailImage(product, 220),
+                              const SizedBox(height: 16),
+                              _detailCopy(product),
+                            ],
+                          )
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(child: _detailImage(product, 420)),
+                              const SizedBox(width: 32),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 12),
+                                  child: _detailCopy(product),
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+
+                // STICKY ALWAYS-VISIBLE BOTTOM ACTION BAR WITH EQUAL-HEIGHT BUTTONS & COUNTER
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(top: BorderSide(color: line, width: 1)),
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    child: Consumer<CartService>(
+                      builder: (context, cartService, child) {
+                        final currSize = selectedSize ?? (product.sizes.isNotEmpty ? product.sizes.first : 'M');
+                        final currColor = selectedColor ?? (product.colors.isNotEmpty ? product.colors.first : 'أسود');
+                        final itemId = '${product.id}_${currSize}_$currColor';
+                        final cartItemIndex = cartService.items.indexWhere((item) => item.id == itemId);
+                        final itemInCart = cartItemIndex != -1 ? cartService.items[cartItemIndex] : null;
+
+                        return Row(
                           children: [
-                            _detailImage(product, 220),
-                            const SizedBox(height: 16),
-                            _detailCopy(product),
-                          ],
-                        )
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(child: _detailImage(product, 420)),
-                            const SizedBox(width: 32),
                             Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 12),
-                                child: _detailCopy(product),
+                              child: SizedBox(
+                                height: 48,
+                                child: itemInCart != null
+                                    ? Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                                        decoration: BoxDecoration(
+                                          color: paper,
+                                          border: Border.all(color: ink, width: 1.5),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            InkWell(
+                                              onTap: () => cartService.updateQuantity(itemInCart.id, -1),
+                                              child: const Padding(
+                                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                                                child: FaIcon(FontAwesomeIcons.minus, size: 12, color: ink),
+                                              ),
+                                            ),
+                                            Text(
+                                              'الكمية: ${itemInCart.quantity}',
+                                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo'),
+                                            ),
+                                            InkWell(
+                                              onTap: () => cartService.updateQuantity(itemInCart.id, 1),
+                                              child: const Padding(
+                                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                                                child: FaIcon(FontAwesomeIcons.plus, size: 12, color: ink),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : OutlinedButton.icon(
+                                        onPressed: !product.isAvailable
+                                            ? null
+                                            : () {
+                                                cartService.addItem(
+                                                  product: product,
+                                                  size: currSize,
+                                                  color: currColor,
+                                                );
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text('تمت إضافة القطعة إلى السلة ✨', style: TextStyle(fontFamily: 'Cairo')),
+                                                    duration: Duration(seconds: 2),
+                                                  ),
+                                                );
+                                              },
+                                        icon: const FaIcon(FontAwesomeIcons.cartPlus, size: 14, color: ink),
+                                        label: const Text(
+                                          'إضافة للسلة',
+                                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo'),
+                                        ),
+                                        style: OutlinedButton.styleFrom(
+                                          side: const BorderSide(color: ink, width: 1.5),
+                                          shape: const RoundedRectangleBorder(),
+                                        ),
+                                      ),
                               ),
                             ),
-                          ],
-                        ),
-                ),
-              ),
-
-              // STICKY ALWAYS-VISIBLE BOTTOM ACTION BAR
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  border: Border(top: BorderSide(color: line, width: 1)),
-                ),
-                child: SafeArea(
-                  top: false,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: !product.isAvailable
-                              ? null
-                              : () {
-                                  cartService.addItem(
-                                    product: product,
-                                    size: selectedSize ?? (product.sizes.isNotEmpty ? product.sizes.first : 'M'),
-                                    color: selectedColor ?? (product.colors.isNotEmpty ? product.colors.first : 'أسود'),
-                                  );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('تمت إضافة القطعة إلى السلة ✨', style: TextStyle(fontFamily: 'Cairo')),
-                                      duration: Duration(seconds: 2),
-                                    ),
-                                  );
-                                },
-                          icon: const FaIcon(FontAwesomeIcons.cartPlus, size: 14, color: ink),
-                          label: const Text(
-                            'إضافة للسلة',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo'),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: ink, width: 1.5),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: const RoundedRectangleBorder(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: FilledButton.icon(
-                          onPressed: !product.isAvailable
-                              ? null
-                              : () async {
-                                  final num = _formatWhatsappNumber(widget.store.whatsapp);
-                                  final imageUrl = product.imageUrls.isNotEmpty ? product.imageUrls.first : '';
-                                  final message = '''مرحباً سيمليسيتي وينز 👋
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: SizedBox(
+                                height: 48,
+                                child: FilledButton.icon(
+                                  onPressed: !product.isAvailable
+                                      ? null
+                                      : () async {
+                                          final num = _formatWhatsappNumber(widget.store.whatsapp);
+                                          final imageUrl = product.imageUrls.isNotEmpty ? product.imageUrls.first : '';
+                                          final qtyStr = itemInCart != null ? '\n🔢 الكمية: ${itemInCart.quantity}' : '';
+                                          final message = '''مرحباً سيمليسيتي وينز 👋
 أود طلب المنتج التالي:
 📌 المنتج: ${product.nameAr}
 🏷️ السعر: ${_formatPrice(product.price)}
-📏 المقاس: ${selectedSize ?? 'غير محدد'}
-🎨 اللون: ${selectedColor ?? 'غير محدد'}
+📏 المقاس: $currSize
+🎨 اللون: $currColor$qtyStr
 🖼️ الصورة: $imageUrl''';
 
-                                  final url = 'https://wa.me/$num?text=${Uri.encodeComponent(message)}';
-                                  final uri = Uri.parse(url);
-                                  if (await canLaunchUrl(uri)) {
-                                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                                  }
-                                },
-                          icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 15),
-                          label: Text(
-                            product.isAvailable ? 'طلب عبر الواتساب' : 'غير متوفر',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
-                          ),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: product.isAvailable ? ink : muted,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: const RoundedRectangleBorder(),
-                          ),
-                        ),
-                      ),
-                    ],
+                                          final url = 'https://wa.me/$num?text=${Uri.encodeComponent(message)}';
+                                          final uri = Uri.parse(url);
+                                          if (await canLaunchUrl(uri)) {
+                                            await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                          }
+                                        },
+                                  icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 15),
+                                  label: Text(
+                                    product.isAvailable ? 'طلب عبر الواتساب' : 'غير متوفر',
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+                                  ),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: product.isAvailable ? ink : muted,
+                                    foregroundColor: Colors.white,
+                                    shape: const RoundedRectangleBorder(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -258,7 +306,7 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: images.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 6),
+              separatorBuilder: (_, _) => const SizedBox(width: 6),
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
                   setState(() => currentImage = index);
@@ -287,31 +335,33 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
     );
   }
 
-  Widget _fullImageViewer(List<String> images, int initial) => Scaffold(
-        backgroundColor: Colors.black,
-        body: Stack(
-          children: [
-            PageView.builder(
-              controller: PageController(initialPage: initial),
-              itemCount: images.length,
-              itemBuilder: (context, index) => Center(
-                child: InteractiveViewer(
-                  minScale: 0.8,
-                  maxScale: 4.0,
-                  child: AppImage(imageUrl: images[index], fit: BoxFit.contain),
+  Widget _fullImageViewer(List<String> images, int initial) => PointerInterceptor(
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: [
+              PageView.builder(
+                controller: PageController(initialPage: initial),
+                itemCount: images.length,
+                itemBuilder: (context, index) => Center(
+                  child: InteractiveViewer(
+                    minScale: 0.8,
+                    maxScale: 4.0,
+                    child: AppImage(imageUrl: images[index], fit: BoxFit.contain),
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 36,
-              right: 20,
-              child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                color: Colors.white,
-                icon: const FaIcon(FontAwesomeIcons.xmark, size: 22, color: Colors.white),
+              Positioned(
+                top: 36,
+                right: 20,
+                child: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  color: Colors.white,
+                  icon: const FaIcon(FontAwesomeIcons.xmark, size: 22, color: Colors.white),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
 

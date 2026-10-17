@@ -143,7 +143,7 @@ class HomeScreen extends StatelessWidget {
                           horizontal: mobile ? 18 : 58,
                         ),
                         itemCount: badgeProducts.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 16),
+                        separatorBuilder: (_, _) => const SizedBox(width: 16),
                         itemBuilder: (context, index) {
                           final product = badgeProducts[index];
                           return SizedBox(
@@ -383,7 +383,7 @@ class HomeScreen extends StatelessWidget {
               _circularIconButton(
                 icon: FontAwesomeIcons.facebookF,
                 color: const Color(0xFF1877F2),
-                url: 'https://facebook.com',
+                url: store.facebookUrl,
               ),
               const SizedBox(width: 16),
               _circularIconButton(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../services/cart_service.dart';
@@ -35,73 +36,75 @@ class _ProductCardState extends State<ProductCard> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
       ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (context, setModalState) => Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'اختر المقاس المطلوب لـ ${product.nameAr}',
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo'),
-              ),
-              const SizedBox(height: 16),
-              const Text('المقاس:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo')),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: product.sizes.map((s) {
-                  final isSelected = selectedSize == s;
-                  return InkWell(
-                    onTap: () => setModalState(() => selectedSize = s),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: isSelected ? ink : paper,
-                        border: Border.all(color: isSelected ? ink : line),
-                      ),
-                      child: Text(
-                        s,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isSelected ? Colors.white : ink,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          fontFamily: 'Cairo',
+      builder: (ctx) => PointerInterceptor(
+        child: StatefulBuilder(
+          builder: (context, setModalState) => Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'اختر المقاس المطلوب لـ ${product.nameAr}',
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo'),
+                ),
+                const SizedBox(height: 16),
+                const Text('المقاس:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo')),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: product.sizes.map((s) {
+                    final isSelected = selectedSize == s;
+                    return InkWell(
+                      onTap: () => setModalState(() => selectedSize = s),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? ink : paper,
+                          border: Border.all(color: isSelected ? ink : line),
+                        ),
+                        child: Text(
+                          s,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isSelected ? Colors.white : ink,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontFamily: 'Cairo',
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () {
-                    cartService.addItem(
-                      product: product,
-                      size: selectedSize,
-                      color: selectedColor,
                     );
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('تمت إضافة ${product.nameAr} (مقاس $selectedSize) إلى السلة ✨', style: const TextStyle(fontFamily: 'Cairo', fontSize: 12)),
-                        duration: const Duration(seconds: 2),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: ink,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: const RoundedRectangleBorder(),
-                  ),
-                  child: const Text('إضافة إلى السلة', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                  }).toList(),
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () {
+                      cartService.addItem(
+                        product: product,
+                        size: selectedSize,
+                        color: selectedColor,
+                      );
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('تمت إضافة ${product.nameAr} (مقاس $selectedSize) إلى السلة ✨', style: const TextStyle(fontFamily: 'Cairo', fontSize: 12)),
+                          duration: const Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: ink,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: const RoundedRectangleBorder(),
+                    ),
+                    child: const Text('إضافة إلى السلة', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

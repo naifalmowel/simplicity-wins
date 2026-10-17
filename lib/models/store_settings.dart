@@ -6,6 +6,7 @@ class StoreSettings {
   final String phone;
   final String whatsapp;
   final String instagram;
+  final String facebook;
   final String address;
   final String addressAr;
   final double latitude;
@@ -23,6 +24,14 @@ class StoreSettings {
   String get mobileLogoUrl => logoUrl;
   String get locationTitle => 'موقع المحل في التل، ريف دمشق';
 
+  String get facebookUrl {
+    if (facebook.isEmpty) return 'https://facebook.com';
+    if (facebook.startsWith('http://') || facebook.startsWith('https://')) {
+      return facebook;
+    }
+    return 'https://facebook.com/$facebook';
+  }
+
   StoreSettings({
     required this.storeName,
     required this.storeNameAr,
@@ -31,6 +40,7 @@ class StoreSettings {
     required this.phone,
     required this.whatsapp,
     required this.instagram,
+    this.facebook = 'Simplicity-Wins',
     required this.address,
     required this.addressAr,
     required this.latitude,
@@ -55,6 +65,7 @@ class StoreSettings {
       phone: map['phone'] ?? '0969598176',
       whatsapp: map['whatsapp'] ?? '+963969598176',
       instagram: map['instagram'] ?? 'simplicity__wins',
+      facebook: map['facebook'] ?? 'Simplicity-Wins',
       address: map['address'] ?? 'Al-Tal, Damascus Suburb, Syria',
       addressAr: map['addressAr'] ?? 'التل، ريف دمشق، سوريا',
       latitude: (map['latitude'] ?? 33.6142).toDouble(),
@@ -80,6 +91,7 @@ class StoreSettings {
       'phone': phone,
       'whatsapp': whatsapp,
       'instagram': instagram,
+      'facebook': facebook,
       'address': address,
       'addressAr': addressAr,
       'latitude': latitude,

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../theme/app_theme.dart';
@@ -25,31 +24,28 @@ class MobileBottomBar extends StatelessWidget {
       bottom: 16,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-          child: Container(
-            height: 64,
-            decoration: BoxDecoration(
-              color: ink.withValues(alpha: 0.96),
-              border: Border.all(color: Colors.white12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.25),
-                  blurRadius: 18,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _barItem(FontAwesomeIcons.house, 'الرئيسية', onHome),
-                _barItem(FontAwesomeIcons.tag, 'العروض', onOffers),
-                _barItem(FontAwesomeIcons.borderAll, 'المنتجات', onCatalog),
-                _barItem(FontAwesomeIcons.headset, 'تواصل', onContact),
-              ],
-            ),
+        child: Container(
+          height: 64,
+          decoration: BoxDecoration(
+            color: ink.withValues(alpha: 0.96),
+            border: Border.all(color: Colors.white12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 18,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _barItem(FontAwesomeIcons.house, 'الرئيسية', onHome),
+              _barItem(FontAwesomeIcons.tag, 'العروض', onOffers),
+              _barItem(FontAwesomeIcons.borderAll, 'المنتجات', onCatalog),
+              _barItem(FontAwesomeIcons.headset, 'تواصل', onContact),
+            ],
           ),
         ),
       ),
