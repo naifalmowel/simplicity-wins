@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -42,9 +41,9 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
 
   String _formatWhatsappNumber(String whatsapp) {
     final number = whatsapp.replaceAll(RegExp(r'\D'), '');
+    if (number.startsWith('963')) return number;
     if (number.startsWith('0')) return '963${number.substring(1)}';
-    if (number.startsWith('9')) return '963$number';
-    return number;
+    return number.isNotEmpty ? number : '963969598176';
   }
 
   @override
@@ -108,7 +107,7 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
                   ),
                 ),
 
-                // STICKY ALWAYS-VISIBLE BOTTOM ACTION BAR WITH EQUAL-HEIGHT BUTTONS & COUNTER
+                // STICKY ALWAYS-VISIBLE BOTTOM ACTION BAR WITH EQUAL-HEIGHT BUTTONS & SYNCHRONIZED COUNTER
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
@@ -121,9 +120,10 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
                       builder: (context, cartService, child) {
                         final currSize = selectedSize ?? (product.sizes.isNotEmpty ? product.sizes.first : 'M');
                         final currColor = selectedColor ?? (product.colors.isNotEmpty ? product.colors.first : 'أسود');
-                        final itemId = '${product.id}_${currSize}_$currColor';
-                        final cartItemIndex = cartService.items.indexWhere((item) => item.id == itemId);
-                        final itemInCart = cartItemIndex != -1 ? cartService.items[cartItemIndex] : null;
+                        
+                        // Check if this product is already in the cart (synchronized with product card)
+                        final matchingItems = cartService.items.where((item) => item.product.id == product.id).toList();
+                        final itemInCart = matchingItems.isNotEmpty ? matchingItems.first : null;
 
                         return Row(
                           children: [
@@ -144,7 +144,7 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
                                               onTap: () => cartService.updateQuantity(itemInCart.id, -1),
                                               child: const Padding(
                                                 padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                                                child: FaIcon(FontAwesomeIcons.minus, size: 12, color: ink),
+                                                child: Icon(Icons.remove, size: 14, color: ink),
                                               ),
                                             ),
                                             Text(
@@ -155,7 +155,7 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
                                               onTap: () => cartService.updateQuantity(itemInCart.id, 1),
                                               child: const Padding(
                                                 padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                                                child: FaIcon(FontAwesomeIcons.plus, size: 12, color: ink),
+                                                child: Icon(Icons.add, size: 14, color: ink),
                                               ),
                                             ),
                                           ],
@@ -177,7 +177,7 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
                                                   ),
                                                 );
                                               },
-                                        icon: const FaIcon(FontAwesomeIcons.cartPlus, size: 14, color: ink),
+                                        icon: const Icon(Icons.add_shopping_cart_rounded, size: 14, color: ink),
                                         label: const Text(
                                           'إضافة للسلة',
                                           style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo'),
@@ -214,7 +214,7 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
                                             await launchUrl(uri, mode: LaunchMode.externalApplication);
                                           }
                                         },
-                                  icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 15),
+                                  icon: const Icon(Icons.chat_bubble_outline, size: 15),
                                   label: Text(
                                     product.isAvailable ? 'طلب عبر الواتساب' : 'غير متوفر',
                                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
@@ -289,7 +289,7 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
                         width: i == currentImage ? 16 : 5,
                         height: 5,
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: i == currentImage ? .85 : .35),
+                          color: Colors.black.withOpacity(i == currentImage ? .85 : .35),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -306,7 +306,7 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: images.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 6),
+              separatorBuilder: (_, __) => const SizedBox(width: 6),
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
                   setState(() => currentImage = index);
@@ -357,7 +357,7 @@ class _ProductDetailModalState extends State<ProductDetailModal> {
                 child: IconButton(
                   onPressed: () => Navigator.pop(context),
                   color: Colors.white,
-                  icon: const FaIcon(FontAwesomeIcons.xmark, size: 22, color: Colors.white),
+                  icon: const Icon(Icons.close, size: 22, color: Colors.white),
                 ),
               ),
             ],

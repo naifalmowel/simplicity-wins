@@ -97,21 +97,22 @@ class ContactScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 30),
 
-              // Luxury Contact Cards
+              // Equal-Sized Luxury Contact Cards Grid
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: mobile ? 18 : 58),
                 child: Wrap(
                   spacing: 20,
                   runSpacing: 20,
+                  alignment: WrapAlignment.start,
                   children: [
                     _contactCard(
                       icon: FontAwesomeIcons.whatsapp,
                       iconColor: const Color(0xFF25D366),
                       title: 'محادثة الواتساب المباشرة',
                       value: store.whatsapp,
-                      subtitle: 'تواصل معنا لطلب المنتجات والاستفسار عن الحجوزات والمقاسات',
+                      subtitle: 'لطلب المنتجات والاستفسار عن المقاسات',
                       buttonText: 'محادثة واتساب',
                       onTap: () => _open('https://wa.me/${store.whatsapp}?text=مرحباً سيمليسيتي وينز 👋'),
                     ),
@@ -127,18 +128,18 @@ class ContactScreen extends StatelessWidget {
                     _contactCard(
                       icon: FontAwesomeIcons.instagram,
                       iconColor: const Color(0xFFE1306C),
-                      title: 'حساب الإنستغرام الرسمى',
+                      title: 'حساب الإنستغرام',
                       value: '@${store.instagram}',
-                      subtitle: 'تابع التغطيات واليوميات والقطع الحصرية على إنستغرام',
+                      subtitle: 'تابع التغطيات واليوميات والقطع الحصرية',
                       buttonText: 'زيارة إنستغرام',
                       onTap: () => _open('https://instagram.com/${store.instagram}'),
                     ),
                     _contactCard(
                       icon: FontAwesomeIcons.facebookF,
                       iconColor: const Color(0xFF1877F2),
-                      title: 'صفحة الفيسبوك الرسمية',
+                      title: 'صفحة الفيسبوك',
                       value: store.facebook,
-                      subtitle: 'تابع آخر التشكيلات والتحديثات اليومية على فيسبوك',
+                      subtitle: 'تابع آخر التشكيلات والتحديثات اليومية',
                       buttonText: 'زيارة فيسبوك',
                       onTap: () => _open(store.facebookUrl),
                     ),
@@ -146,7 +147,7 @@ class ContactScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 36),
+              const SizedBox(height: 48),
 
               // Location & Embedded Google Map Section
               Padding(
@@ -195,46 +196,58 @@ class ContactScreen extends StatelessWidget {
     required String buttonText,
     required VoidCallback onTap,
   }) {
-    return Container(
+    return SizedBox(
       width: 320,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: line),
-        borderRadius: BorderRadius.circular(4),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FaIcon(icon, color: iconColor, size: 24),
-          const SizedBox(height: 14),
-          Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo')),
-          const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: olive, fontFamily: 'Cairo')),
-          const SizedBox(height: 8),
-          Text(subtitle, style: const TextStyle(fontSize: 11, color: muted, height: 1.5, fontFamily: 'Cairo')),
-          const SizedBox(height: 18),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: onTap,
-              style: FilledButton.styleFrom(
-                backgroundColor: ink,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: const RoundedRectangleBorder(),
-              ),
-              child: Text(buttonText, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+      height: 215,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: line),
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    FaIcon(icon, color: iconColor, size: 22),
+                    Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: muted, fontFamily: 'Cairo')),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: ink, fontFamily: 'Cairo'), maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Text(subtitle, style: const TextStyle(fontSize: 11, color: muted, height: 1.4, fontFamily: 'Cairo'), maxLines: 2, overflow: TextOverflow.ellipsis),
+              ],
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: onTap,
+                style: FilledButton.styleFrom(
+                  backgroundColor: ink,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  shape: const RoundedRectangleBorder(),
+                ),
+                child: Text(buttonText, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -253,6 +266,7 @@ class GoogleMapsEmbedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (kIsWeb) {
+      // ignore: undefined_prefixed_name
       ui_web.platformViewRegistry.registerViewFactory(
         'google-maps-embed-iframe',
         (int viewId) {

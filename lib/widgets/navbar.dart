@@ -30,7 +30,7 @@ class Navbar extends StatelessWidget implements PreferredSizeWidget {
     final navContent = Container(
       padding: EdgeInsets.symmetric(horizontal: isMobile ? 12 : 24),
       decoration: BoxDecoration(
-        color: paper.withValues(alpha: kIsWeb ? 0.98 : 0.92),
+        color: paper.withOpacity(kIsWeb ? 0.98 : 0.92),
         border: const Border(
           bottom: BorderSide(color: line, width: 1),
         ),
@@ -93,22 +93,20 @@ class Navbar extends StatelessWidget implements PreferredSizeWidget {
 
           const Spacer(),
 
-          // Desktop Nav Links
+          // Desktop Nav Links: الرئيسية, المنتجات, تواصل معنا (Removed Offers)
           if (!isMobile)
             Row(
               children: [
                 _navItem('الرئيسية', 0, () => onTabSelected(0)),
-                const SizedBox(width: 24),
-                _navItem('العروض', 1, () => onTabSelected(1)),
-                const SizedBox(width: 24),
-                _navItem('المنتجات', 2, () {
+                const SizedBox(width: 32),
+                _navItem('المنتجات', 1, () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const CatalogScreen()),
                   );
                 }),
-                const SizedBox(width: 24),
-                _navItem('تواصل معنا', 3, () {
+                const SizedBox(width: 32),
+                _navItem('تواصل معنا', 2, () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ContactScreen()),

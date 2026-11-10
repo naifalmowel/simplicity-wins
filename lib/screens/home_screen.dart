@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class HomeScreen extends StatelessWidget {
           // 1. HERO COVER SECTION (#top)
           _hero(context, mobile, store),
 
-          // 2. SWIPEABLE OFFERS BANNER CAROUSEL (#offers)
+          // 2. OFFERS SECTION (Side-by-side if 2 on web, or swipeable carousel) (#offers)
           Container(
             key: offersKey,
             child: OffersCarouselWidget(
@@ -143,7 +144,7 @@ class HomeScreen extends StatelessWidget {
                           horizontal: mobile ? 18 : 58,
                         ),
                         itemCount: badgeProducts.length,
-                        separatorBuilder: (_, _) => const SizedBox(width: 16),
+                        separatorBuilder: (_, __) => const SizedBox(width: 16),
                         itemBuilder: (context, index) {
                           final product = badgeProducts[index];
                           return SizedBox(
@@ -155,7 +156,7 @@ class HomeScreen extends StatelessWidget {
                                   context: context,
                                   isScrollControlled: true,
                                   backgroundColor: paper,
-                                  barrierColor: ink.withValues(alpha: .55),
+                                  barrierColor: ink.withOpacity(.55),
                                   shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
                                   ),
@@ -212,8 +213,8 @@ class HomeScreen extends StatelessWidget {
                 begin: Alignment.centerRight,
                 end: Alignment.centerLeft,
                 colors: [
-                  Colors.black.withValues(alpha: .75),
-                  Colors.black.withValues(alpha: .35),
+                  Colors.black.withOpacity(.75),
+                  Colors.black.withOpacity(.35),
                   Colors.transparent,
                 ],
               ),
@@ -225,7 +226,7 @@ class HomeScreen extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.5),
+                color: Colors.black.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(2),
               ),
               child: const Text(
@@ -257,7 +258,7 @@ class HomeScreen extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.28),
+                  color: Colors.black.withOpacity(0.28),
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(color: Colors.white24),
                 ),
@@ -298,7 +299,7 @@ class HomeScreen extends StatelessWidget {
                       child: Text(
                         'قطع مختارة بعناية، ستايل عصري، وتفاصيل بتفرق.',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: .9),
+                          color: Colors.white.withOpacity(.9),
                           fontSize: mobile ? 12 : 15,
                           height: 1.7,
                           shadows: const [Shadow(color: Colors.black, blurRadius: 4)],
@@ -354,51 +355,56 @@ class HomeScreen extends StatelessWidget {
 
   // Circular Social Icons & Map Section before Footer
   Widget _circularSocialAndMapSection(bool mobile, StoreSettings store) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: mobile ? 18 : 58),
-      padding: EdgeInsets.all(mobile ? 20 : 32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: line),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Column(
-        children: [
-          // Circular Social Icon Buttons Bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: mobile ? double.infinity : 900),
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: mobile ? 18 : 0),
+          padding: EdgeInsets.all(mobile ? 20 : 32),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: line),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Column(
             children: [
-              _circularIconButton(
-                icon: FontAwesomeIcons.whatsapp,
-                color: const Color(0xFF25D366),
-                url: 'https://wa.me/${store.whatsapp}?text=مرحباً سيمليسيتي وينز 👋',
+              // Circular Social Icon Buttons Bar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _circularIconButton(
+                    icon: FontAwesomeIcons.whatsapp,
+                    color: const Color(0xFF25D366),
+                    url: 'https://wa.me/${store.whatsapp}?text=مرحباً سيمليسيتي وينز 👋',
+                  ),
+                  const SizedBox(width: 16),
+                  _circularIconButton(
+                    icon: FontAwesomeIcons.instagram,
+                    color: const Color(0xFFE1306C),
+                    url: 'https://instagram.com/${store.instagram}',
+                  ),
+                  const SizedBox(width: 16),
+                  _circularIconButton(
+                    icon: FontAwesomeIcons.facebookF,
+                    color: const Color(0xFF1877F2),
+                    url: store.facebookUrl,
+                  ),
+                  const SizedBox(width: 16),
+                  _circularIconButton(
+                    icon: FontAwesomeIcons.phone,
+                    color: ink,
+                    url: 'tel:${store.phone}',
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              _circularIconButton(
-                icon: FontAwesomeIcons.instagram,
-                color: const Color(0xFFE1306C),
-                url: 'https://instagram.com/${store.instagram}',
-              ),
-              const SizedBox(width: 16),
-              _circularIconButton(
-                icon: FontAwesomeIcons.facebookF,
-                color: const Color(0xFF1877F2),
-                url: store.facebookUrl,
-              ),
-              const SizedBox(width: 16),
-              _circularIconButton(
-                icon: FontAwesomeIcons.phone,
-                color: ink,
-                url: 'tel:${store.phone}',
-              ),
+
+              const SizedBox(height: 24),
+
+              // Google Maps Embed
+              const GoogleMapsEmbedWidget(),
             ],
           ),
-
-          const SizedBox(height: 24),
-
-          // Google Maps Embed
-          const GoogleMapsEmbedWidget(),
-        ],
+        ),
       ),
     );
   }
@@ -420,7 +426,7 @@ class HomeScreen extends StatelessWidget {
           border: Border.all(color: line, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withOpacity(0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -434,8 +440,8 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// Swipeable Interactive Offers Carousel with Blue Active Page Indicator Dot
-class OffersCarouselWidget extends StatefulWidget {
+// Offers Widget: Side-by-side if 2 on web, or swipeable carousel
+class OffersCarouselWidget extends StatelessWidget {
   final bool mobile;
   final List<Offer> offers;
 
@@ -446,172 +452,280 @@ class OffersCarouselWidget extends StatefulWidget {
   });
 
   @override
-  State<OffersCarouselWidget> createState() => _OffersCarouselWidgetState();
+  Widget build(BuildContext context) {
+    if (offers.isEmpty) return const SizedBox.shrink();
+
+    // If on Web/Desktop and exactly 2 offers -> Display them side by side simultaneously!
+    if (!mobile && offers.length == 2) {
+      return Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1100),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: mobile ? 18 : 0, vertical: 36),
+            child: Row(
+              children: [
+                Expanded(child: _buildOfferCard(context, offers[0], 0)),
+                const SizedBox(width: 24),
+                Expanded(child: _buildOfferCard(context, offers[1], 1)),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Otherwise (Mobile or 1 offer or 3+ offers) -> Interactive Carousel
+    return _OffersSwipeableCarousel(mobile: mobile, offers: offers);
+  }
+
+  Widget _buildOfferCard(BuildContext context, Offer offer, int index) {
+    return Container(
+      height: 380,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        color: const Color(0xffdedbd2),
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          AppImage(imageUrl: offer.image, fit: BoxFit.cover),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Colors.black.withOpacity(.85),
+                  Colors.black.withOpacity(.40),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            right: 24,
+            bottom: 24,
+            left: 24,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.28),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: Colors.white24),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'CURATED FOR YOU  /  0${index + 1}',
+                    style: const TextStyle(color: Colors.white70, fontSize: 9, letterSpacing: 2),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    offer.titleAr,
+                    style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700, shadows: [Shadow(color: Colors.black, blurRadius: 6)]),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(offer.descriptionAr, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                  const SizedBox(height: 12),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CatalogScreen()),
+                      );
+                    },
+                    icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 14, color: Colors.white),
+                    label: Text(offer.buttonText, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 20,
+            top: 20,
+            child: Text(
+              'S/W  —  DROP 0${index + 1}',
+              style: const TextStyle(color: Colors.white, fontSize: 9, letterSpacing: 2, fontWeight: FontWeight.bold, shadows: [Shadow(color: Colors.black, blurRadius: 6)]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _OffersCarouselWidgetState extends State<OffersCarouselWidget> {
+// Swipeable Carousel for 1 or 3+ offers
+class _OffersSwipeableCarousel extends StatefulWidget {
+  final bool mobile;
+  final List<Offer> offers;
+
+  const _OffersSwipeableCarousel({required this.mobile, required this.offers});
+
+  @override
+  State<_OffersSwipeableCarousel> createState() => _OffersSwipeableCarouselState();
+}
+
+class _OffersSwipeableCarouselState extends State<_OffersSwipeableCarousel> {
   int _currentPage = 0;
   final PageController _pageController = PageController();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (widget.offers.length > 1) {
+        if (!mounted) return;
+        int nextPage = (_currentPage + 1) % widget.offers.length;
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            nextPage,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOutCubic,
+          );
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.offers.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      children: [
-        Container(
-          margin: EdgeInsets.fromLTRB(
-            widget.mobile ? 18 : 58,
-            36,
-            widget.mobile ? 18 : 58,
-            14,
-          ),
-          height: widget.mobile ? 320 : 390,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            color: const Color(0xffdedbd2),
-          ),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              PageView.builder(
-                controller: _pageController,
-                itemCount: widget.offers.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  final offer = widget.offers[index];
-                  return Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      AppImage(
-                        imageUrl: offer.image,
-                        fit: BoxFit.cover,
-                      ),
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: .85),
-                              Colors.black.withValues(alpha: .40),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: widget.mobile ? 16 : 56,
-                        bottom: widget.mobile ? 20 : 48,
-                        left: widget.mobile ? 16 : 56,
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.28),
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: Colors.white24),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'CURATED FOR YOU  /  0${index + 1}',
-                                style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 9,
-                                  letterSpacing: 2,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                offer.titleAr,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: widget.mobile ? 20 : 32,
-                                  fontWeight: FontWeight.w700,
-                                  shadows: const [Shadow(color: Colors.black, blurRadius: 6)],
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                offer.descriptionAr,
-                                style: const TextStyle(color: Colors.white70, fontSize: 12),
-                              ),
-                              const SizedBox(height: 12),
-                              TextButton.icon(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => const CatalogScreen()),
-                                  );
-                                },
-                                icon: const FaIcon(
-                                  FontAwesomeIcons.arrowLeft,
-                                  size: 14,
-                                  color: Colors.white,
-                                ),
-                                label: Text(
-                                  offer.buttonText,
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                                ),
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: widget.mobile ? double.infinity : 900),
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.fromLTRB(widget.mobile ? 18 : 0, 36, widget.mobile ? 18 : 0, 14),
+              height: widget.mobile ? 320 : 390,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: const Color(0xffdedbd2),
               ),
-              Positioned(
-                left: 20,
-                top: 20,
-                child: Text(
-                  'S/W  —  DROP 0${_currentPage + 1}',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: .9),
-                    fontSize: 9,
-                    letterSpacing: 2,
-                    fontWeight: FontWeight.bold,
-                    shadows: const [Shadow(color: Colors.black, blurRadius: 6)],
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  PageView.builder(
+                    controller: _pageController,
+                    itemCount: widget.offers.length,
+                    onPageChanged: (index) => setState(() => _currentPage = index),
+                    itemBuilder: (context, index) {
+                      final offer = widget.offers[index];
+                      return Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          AppImage(imageUrl: offer.image, fit: BoxFit.cover),
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: [
+                                  Colors.black.withOpacity(.85),
+                                  Colors.black.withOpacity(.40),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            right: widget.mobile ? 16 : 56,
+                            bottom: widget.mobile ? 20 : 48,
+                            left: widget.mobile ? 16 : 56,
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.28),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: Colors.white24),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'CURATED FOR YOU  /  0${index + 1}',
+                                    style: const TextStyle(color: Colors.white70, fontSize: 9, letterSpacing: 2),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    offer.titleAr,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: widget.mobile ? 20 : 32,
+                                      fontWeight: FontWeight.w700,
+                                      shadows: const [Shadow(color: Colors.black, blurRadius: 6)],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(offer.descriptionAr, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                                  const SizedBox(height: 12),
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const CatalogScreen()),
+                                      );
+                                    },
+                                    icon: const FaIcon(FontAwesomeIcons.arrowLeft, size: 14, color: Colors.white),
+                                    label: Text(offer.buttonText, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
+                  Positioned(
+                    left: 20,
+                    top: 20,
+                    child: Text(
+                      'S/W  —  DROP 0${_currentPage + 1}',
+                      style: TextStyle(color: Colors.white.withOpacity(.9), fontSize: 9, letterSpacing: 2, fontWeight: FontWeight.bold, shadows: const [Shadow(color: Colors.black, blurRadius: 6)]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (widget.offers.length > 1)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  widget.offers.length,
+                  (index) {
+                    final isSelected = index == _currentPage;
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: isSelected ? 24 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: isSelected ? const Color(0xFF2980B9) : line,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    );
+                  },
                 ),
               ),
-            ],
-          ),
+          ],
         ),
-
-        // Carousel Dot Indicators below the Carousel (Active Dot Colored Blue)
-        if (widget.offers.length > 1)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              widget.offers.length,
-              (index) {
-                final isSelected = index == _currentPage;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: isSelected ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF2980B9) : line, // Blue active indicator
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                );
-              },
-            ),
-          ),
-      ],
+      ),
     );
   }
 }
@@ -622,6 +736,7 @@ class GoogleMapsEmbedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (kIsWeb) {
+      // ignore: undefined_prefixed_name
       ui_web.platformViewRegistry.registerViewFactory(
         'google-maps-embed-iframe-home',
         (int viewId) {

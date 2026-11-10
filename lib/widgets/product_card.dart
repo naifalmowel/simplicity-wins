@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
@@ -206,9 +205,9 @@ class _ProductCardState extends State<ProductCard> {
                           shape: BoxShape.circle,
                         ),
                         child: Center(
-                          child: FaIcon(
-                            FontAwesomeIcons.arrowUpRightFromSquare,
-                            size: 11,
+                          child: Icon(
+                            Icons.arrow_outward_rounded,
+                            size: 14,
                             color: _isHovered ? Colors.white : ink,
                           ),
                         ),
@@ -240,7 +239,7 @@ class _ProductCardState extends State<ProductCard> {
                                         cartService.updateQuantity(matchingCartItems.first.id, -1);
                                       }
                                     },
-                                    child: const FaIcon(FontAwesomeIcons.minus, size: 10, color: Colors.white),
+                                    child: const Icon(Icons.remove, size: 12, color: Colors.white),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -255,7 +254,7 @@ class _ProductCardState extends State<ProductCard> {
                                         cartService.updateQuantity(matchingCartItems.first.id, 1);
                                       }
                                     },
-                                    child: const FaIcon(FontAwesomeIcons.plus, size: 10, color: Colors.white),
+                                    child: const Icon(Icons.add, size: 12, color: Colors.white),
                                   ),
                                 ],
                               ),
@@ -289,7 +288,7 @@ class _ProductCardState extends State<ProductCard> {
                               child: const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  FaIcon(FontAwesomeIcons.cartPlus, size: 11, color: Colors.white),
+                                  Icon(Icons.add_shopping_cart_rounded, size: 13, color: Colors.white),
                                   SizedBox(width: 5),
                                   Text(
                                     'إضافة',

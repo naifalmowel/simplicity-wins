@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
@@ -16,9 +15,9 @@ class CartModal extends StatelessWidget {
 
   String _formatWhatsappNumber(String whatsapp) {
     final number = whatsapp.replaceAll(RegExp(r'\D'), '');
+    if (number.startsWith('963')) return number;
     if (number.startsWith('0')) return '963${number.substring(1)}';
-    if (number.startsWith('9')) return '963$number';
-    return number;
+    return number.isNotEmpty ? number : '963969598176';
   }
 
   @override
@@ -44,15 +43,21 @@ class CartModal extends StatelessWidget {
                 color: ink,
                 child: Row(
                   children: [
-                    const FaIcon(FontAwesomeIcons.bagShopping, color: Colors.white, size: 18),
+                    const Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 18),
                     const SizedBox(width: 10),
                     Text(
                       'سلة المشتريات (${cartService.totalItems})',
                       style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     const Spacer(),
+                    if (cartService.items.isNotEmpty)
+                      TextButton.icon(
+                        onPressed: () => cartService.clearCart(),
+                        icon: const Icon(Icons.delete_sweep_outlined, size: 16, color: Colors.redAccent),
+                        label: const Text('إفراغ السلة', style: TextStyle(fontSize: 12, color: Colors.redAccent, fontFamily: 'Cairo')),
+                      ),
                     IconButton(
-                      icon: const FaIcon(FontAwesomeIcons.xmark, color: Colors.white, size: 18),
+                      icon: const Icon(Icons.close, color: Colors.white, size: 18),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -66,7 +71,7 @@ class CartModal extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const FaIcon(FontAwesomeIcons.bagShopping, size: 48, color: muted),
+                            const Icon(Icons.shopping_bag_outlined, size: 48, color: muted),
                             const SizedBox(height: 16),
                             Text(
                               'السلة فارغة حالياً',
@@ -140,7 +145,7 @@ class CartModal extends StatelessWidget {
                                       width: 28,
                                       height: 28,
                                       decoration: BoxDecoration(border: Border.all(color: line)),
-                                      child: const Center(child: FaIcon(FontAwesomeIcons.minus, size: 10, color: ink)),
+                                      child: const Center(child: Icon(Icons.remove, size: 14, color: ink)),
                                     ),
                                   ),
                                   Padding(
@@ -156,7 +161,7 @@ class CartModal extends StatelessWidget {
                                       width: 28,
                                       height: 28,
                                       decoration: BoxDecoration(border: Border.all(color: line)),
-                                      child: const Center(child: FaIcon(FontAwesomeIcons.plus, size: 10, color: ink)),
+                                      child: const Center(child: Icon(Icons.add, size: 14, color: ink)),
                                     ),
                                   ),
                                 ],
@@ -164,7 +169,7 @@ class CartModal extends StatelessWidget {
 
                               const SizedBox(width: 10),
                               IconButton(
-                                icon: const FaIcon(FontAwesomeIcons.trashCan, size: 16, color: Colors.redAccent),
+                                icon: const Icon(Icons.delete_outline, size: 18, color: Colors.redAccent),
                                 onPressed: () => cartService.removeItem(item.id),
                               ),
                             ],
@@ -221,7 +226,7 @@ $itemsList
                               await launchUrl(uri, mode: LaunchMode.externalApplication);
                             }
                           },
-                          icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 16),
+                          icon: const Icon(Icons.chat_bubble_outline, size: 16),
                           label: Text(
                             'اطلب السلة عبر الواتساب الآن',
                             style: GoogleFonts.cairo(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
